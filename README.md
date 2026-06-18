@@ -1,5 +1,11 @@
 # Haskell MOOC
 
+My solutions for Haskell MOOC exercises by University of Helsinki 
+
+Original README follows:
+
+# Haskell MOOC
+
 <p align="center"><img alt="Course logo" src="img/haskell-mooc-logo.svg" width="400" align="center"></p>
 
 University of Helsinki
