@@ -81,7 +81,7 @@ palindromeHalfs xs = map firstHalf (filter palindrome xs)
 
 firstHalf :: String -> String
 firstHalf s = take n s
-  where 
+  where
     l = length s
     n = if even l then div l 2 else div l 2 + 1
 
@@ -126,10 +126,10 @@ capitalizeFirst s = toUpper (head s) : tail s
 
 powers :: Int -> Int -> [Int]
 powers k max = takeWhile (<= max) p
-  where 
+  where
     f n = k^n
     p = map f [0..max]
-        
+
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a functional while loop. While should be a function
@@ -152,7 +152,7 @@ powers k max = takeWhile (<= max) p
 --     ==> Avvt
 
 while :: (a->Bool) -> (a->a) -> a -> a
-while check update value = todo
+while check update value = if check value then while check update (update value) else value
 
 ------------------------------------------------------------------------------
 -- Ex 8: another version of a while loop. This time, the check
@@ -172,7 +172,8 @@ while check update value = todo
 -- Hint! Remember the case-of expression from lecture 2.
 
 whileRight :: (a -> Either b a) -> a -> b
-whileRight check x = todo
+whileRight check x = case check x of Left l -> l
+                                     Right r -> whileRight check r
 
 -- for the whileRight examples:
 -- step k x doubles x if it's less than k
@@ -196,7 +197,7 @@ bomb x = Right (x-1)
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength = todo
+joinToLength l s = [c | a <- s, b <- s, let c = a ++ b, length c == l]
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
@@ -209,6 +210,14 @@ joinToLength = todo
 --   [1,2,3] +|+ [4,5,6]  ==> [1,4]
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
+
+(+|+) :: [a] -> [a] -> [a]
+[] +|+ [] = []
+[] +|+ y = [head y]
+x +|+ [] = [head x]
+x +|+ y = head x : [head y]
+
+-- x +|+ y = [head x] ++ [head y]
 
 
 ------------------------------------------------------------------------------
@@ -226,8 +235,9 @@ joinToLength = todo
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights = todo
-
+sumRights xs = sum (map either xs)
+  where either (Right x) = x
+        either (Left _) = 0
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
 -- (f . g) x = f (g x). In this exercise, your task is to define a function
