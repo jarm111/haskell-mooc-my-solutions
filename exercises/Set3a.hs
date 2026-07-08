@@ -252,7 +252,9 @@ sumRights xs = sum (map either xs)
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
-multiCompose fs = todo
+multiCompose :: [a -> a] -> (a -> a)
+multiCompose [] = id
+multiCompose (f:fs) = f . multiCompose fs
 
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
@@ -273,7 +275,8 @@ multiCompose fs = todo
 --   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
 --   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
 
-multiApp = todo
+multiApp :: ([b] -> c) -> [a -> b] -> a -> c
+multiApp f gs x = f [g x | g <- gs]
 
 ------------------------------------------------------------------------------
 -- Ex 14: in this exercise you get to implement an interpreter for a
@@ -308,4 +311,15 @@ multiApp = todo
 -- function, the surprise won't work. See section 3.8 in the material.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter s = interpreter' s 0 0 
+
+interpreter' :: [String] -> Int -> Int -> [String]
+interpreter' [] _ _ = []
+interpreter' ("up":cmds) x y = interpreter' cmds x (y+1)
+interpreter' ("down":cmds) x y = interpreter' cmds x (y-1)
+interpreter' ("left":cmds) x y = interpreter' cmds (x-1) y
+interpreter' ("right":cmds) x y = interpreter' cmds (x+1) y
+interpreter' ("printX":cmds) x y = show x : interpreter' cmds x y
+interpreter' ("printY":cmds) x y = show y : interpreter' cmds x y
+
+
