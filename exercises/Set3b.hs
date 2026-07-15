@@ -122,10 +122,13 @@ sorted (x:y:xs) = (x <= y) && sorted (y : xs) -- if x > y then False else sorted
 -- Use pattern matching and recursion (and the list constructors : and [])
 
 sumsOf :: [Int] -> [Int]
-sumsOf []         = []
-sumsOf [x]        = [x]
-sumsOf [x, y]     = [x, x + y]
-sumsOf xs         = [1]
+-- sumsOf []         = []
+-- sumsOf [x]        = [x]
+-- sumsOf [x, y]     = [x, x + y]
+-- sumsOf xs         = [1]
+sumsOf xs = go xs 0
+  where go [] _ = []
+        go (x:xs) sum = (sum + x) : go xs (sum + x)
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement the function merge that merges two sorted lists of
@@ -140,7 +143,12 @@ sumsOf xs         = [1]
 --   merge [1] [2,3,4,5,6] ==> [1,2,3,4,5,6]
 
 merge :: [Int] -> [Int] -> [Int]
-merge xs ys = todo
+merge [] []     = []
+merge (x:xs) [] = x : merge xs []
+merge [] (y:ys) = y : merge [] ys 
+merge (x:xs) (y:ys)
+  | x < y       = x : merge xs (y:ys)
+  | otherwise   = y : merge (x:xs) ys
 
 ------------------------------------------------------------------------------
 -- Ex 8: compute the biggest element, using a comparison function
@@ -164,7 +172,10 @@ merge xs ys = todo
 --     ==> ("Mouse",8)
 
 mymaximum :: (a -> a -> Bool) -> a -> [a] -> a
-mymaximum bigger initial xs = todo
+mymaximum _ initial [] = initial
+mymaximum bigger initial (x:xs)
+  | bigger initial x = mymaximum bigger initial xs
+  | otherwise        = mymaximum bigger x xs
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a version of map that takes a two-argument function
