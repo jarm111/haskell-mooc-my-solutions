@@ -202,7 +202,15 @@ freqs xs = let uniques = nub xs
 --     ==> fromList [("Bob",100),("Mike",50)]
 
 transfer :: String -> String -> Int -> Map.Map String Int -> Map.Map String Int
-transfer from to amount bank = todo
+transfer from to amount bank
+  | Map.notMember to bank
+    || amount < 0
+      = bank
+  | case Map.lookup from bank of
+      Nothing -> True
+      Just sum -> sum < amount
+        = bank
+  | otherwise = Map.adjust (\sum -> sum - amount) from (Map.adjust (\sum -> sum + amount) to bank)
 
 ------------------------------------------------------------------------------
 -- Ex 11: given an Array and two indices, swap the elements in the indices.
@@ -212,7 +220,8 @@ transfer from to amount bank = todo
 --         ==> array (1,4) [(1,"one"),(2,"three"),(3,"two"),(4,"four")]
 
 swap :: Ix i => i -> i -> Array i a -> Array i a
-swap i j arr = todo
+swap i j arr = let one = arr ! i; two = arr ! j
+  in arr // [(i, two), (j, one)]
 
 ------------------------------------------------------------------------------
 -- Ex 12: given an Array, find the index of the largest element. You
@@ -223,4 +232,8 @@ swap i j arr = todo
 -- Hint: check out Data.Array.indices or Data.Array.assocs
 
 maxIndex :: (Ix i, Ord a) => Array i a -> i
-maxIndex = todo
+maxIndex arr = let m = maximum arr
+                   i = elemIndex m (elems arr)
+  in case i of
+    Nothing -> head (indices arr)
+    Just i  -> indices arr !! i
