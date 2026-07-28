@@ -134,7 +134,10 @@ data Student = Freshman | NthYear Int | Graduated
 -- graduated student stays graduated even if he studies.
 
 study :: Student -> Student
-study = todo
+study Freshman = NthYear 1
+study (NthYear 7) = Graduated
+study (NthYear year) = NthYear (year + 1)
+study Graduated = Graduated
 
 ------------------------------------------------------------------------------
 -- Ex 7: define a datatype UpDown that represents a counter that can
@@ -153,25 +156,28 @@ study = todo
 -- get (tick (tick (toggle (tick zero))))
 --   ==> -1
 
-data UpDown = UpDownUndefined1 | UpDownUndefined2
+data UpDown = Increasing Int | Decreasing Int
 
 -- zero is an increasing counter with value 0
 zero :: UpDown
-zero = todo
+zero = Increasing 0
 
 -- get returns the counter value
 get :: UpDown -> Int
-get ud = todo
+get (Increasing n) = n
+get (Decreasing n) = n
 
 -- tick increases an increasing counter by one or decreases a
 -- decreasing counter by one
 tick :: UpDown -> UpDown
-tick ud = todo
+tick (Increasing n)  = Increasing (n + 1)
+tick (Decreasing n) = Decreasing (n - 1)
 
 -- toggle changes an increasing counter into a decreasing counter and
 -- vice versa
 toggle :: UpDown -> UpDown
-toggle ud = todo
+toggle (Increasing n)  = Decreasing n
+toggle (Decreasing n) = Increasing n
 
 ------------------------------------------------------------------------------
 -- Ex 8: you'll find a Color datatype below. It has the three basic
@@ -201,7 +207,11 @@ data Color = Red | Green | Blue | Mix Color Color | Invert Color
   deriving Show
 
 rgb :: Color -> [Double]
-rgb col = todo
+rgb Red = [1,0,0]
+rgb Green = [0,1,0]
+rgb Blue = [0,0,1]
+rgb (Mix col1 col2) = [(x + y) / 2 | (x, y) <- zip (rgb col1) (rgb col2)]
+rgb (Invert col) = [1 - x | x <- rgb col]
 
 ------------------------------------------------------------------------------
 -- Ex 9: define a parameterized datatype OneOrTwo that contains one or
@@ -210,6 +220,8 @@ rgb col = todo
 -- Examples:
 --   One True         ::  OneOrTwo Bool
 --   Two "cat" "dog"  ::  OneOrTwo String
+
+data OneOrTwo a = One a | Two a a
 
 
 ------------------------------------------------------------------------------
@@ -231,14 +243,16 @@ rgb col = todo
 -- Also define the functions toList and fromList that convert between
 -- KeyVals and lists of pairs.
 
-data KeyVals k v = KeyValsUndefined
+data KeyVals k v = Empty | Pair k v (KeyVals k v)
   deriving Show
 
 toList :: KeyVals k v -> [(k,v)]
-toList = todo
+toList Empty = []
+toList (Pair k v t) = (k, v) : toList t
 
 fromList :: [(k,v)] -> KeyVals k v
-fromList = todo
+fromList [] = Empty
+fromList ((k, v): xs) = Pair k v (fromList xs)
 
 ------------------------------------------------------------------------------
 -- Ex 11: The data type Nat is the so called Peano
@@ -255,10 +269,17 @@ data Nat = Zero | PlusOne Nat
   deriving (Show,Eq)
 
 fromNat :: Nat -> Int
-fromNat n = todo
+fromNat Zero = 0
+fromNat (PlusOne nat) = 1 + fromNat nat
 
 toNat :: Int -> Maybe Nat
-toNat z = todo
+toNat n
+  | n < 0     = Nothing
+  | otherwise = Just (natHelper n)
+
+natHelper n 
+  | n == 0    = Zero
+  | otherwise = PlusOne (natHelper (n - 1))
 
 ------------------------------------------------------------------------------
 -- Ex 12: While pleasingly simple in its definition, the Nat datatype is not
