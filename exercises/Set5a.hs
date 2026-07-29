@@ -339,10 +339,19 @@ inc (O b) = I b
 inc (I b) = O (inc b)
 
 prettyPrint :: Bin -> String
-prettyPrint = todo
+prettyPrint b = reverse (go b)
+  where
+    go End   = []
+    go (O b) = '0' : go b
+    go (I b) = '1' : go b
 
 fromBin :: Bin -> Int
-fromBin = todo
+fromBin b = go b 1
+  where
+    go End _     = 0
+    go (O b) exp = go b exp * 2
+    go (I b) exp = exp + go b exp * 2
 
 toBin :: Int -> Bin
-toBin = todo
+toBin 0 = O End
+toBin n = inc (toBin (n - 1))
