@@ -13,7 +13,15 @@ data Country = Finland | Switzerland | Norway
   deriving Show
 
 instance Eq Country where
-  (==) = todo
+  Finland == Finland = True
+  Switzerland == Switzerland = True
+  Norway == Norway = True
+  Finland == Norway = False
+  Finland == Switzerland = False
+  Norway == Finland = False
+  Norway == Switzerland = False
+  Switzerland == Finland = False
+  Switzerland == Norway = False
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement an Ord instance for Country so that
@@ -22,10 +30,15 @@ instance Eq Country where
 -- Remember minimal complete definitions!
 
 instance Ord Country where
-  compare = todo -- implement me?
-  (<=) = todo -- and me?
-  min = todo -- and me?
-  max = todo -- and me?
+  Finland <= Finland = True
+  Switzerland <= Switzerland = True
+  Norway <= Norway = True
+  Finland <= Norway = True
+  Finland <= Switzerland = True
+  Norway <= Finland = False
+  Norway <= Switzerland = True
+  Switzerland <= Finland = False
+  Switzerland <= Norway = False
 
 ------------------------------------------------------------------------------
 -- Ex 3: Implement an Eq instance for the type Name which contains a String.
@@ -41,7 +54,10 @@ data Name = Name String
   deriving Show
 
 instance Eq Name where
-  (==) = todo
+  (Name x) == (Name y) = let strLower = map toLower
+                             a = strLower x
+                             b = strLower y
+                         in a == b && b == a
 
 ------------------------------------------------------------------------------
 -- Ex 4: here is a list type parameterized over the type it contains.
