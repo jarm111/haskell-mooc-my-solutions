@@ -16,12 +16,7 @@ instance Eq Country where
   Finland == Finland = True
   Switzerland == Switzerland = True
   Norway == Norway = True
-  Finland == Norway = False
-  Finland == Switzerland = False
-  Norway == Finland = False
-  Norway == Switzerland = False
-  Switzerland == Finland = False
-  Switzerland == Norway = False
+  _ == _ = False
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement an Ord instance for Country so that
@@ -35,10 +30,8 @@ instance Ord Country where
   Norway <= Norway = True
   Finland <= Norway = True
   Finland <= Switzerland = True
-  Norway <= Finland = False
   Norway <= Switzerland = True
-  Switzerland <= Finland = False
-  Switzerland <= Norway = False
+  _ <= _ = False
 
 ------------------------------------------------------------------------------
 -- Ex 3: Implement an Eq instance for the type Name which contains a String.
@@ -71,7 +64,9 @@ data List a = Empty | LNode a (List a)
   deriving Show
 
 instance Eq a => Eq (List a) where
-  (==) = todo
+  Empty == Empty = True
+  (LNode x xs) == (LNode y ys) = x == y && xs == ys
+  _ == _ = False
 
 ------------------------------------------------------------------------------
 -- Ex 5: below you'll find two datatypes, Egg and Milk. Implement a
@@ -91,6 +86,15 @@ data Egg = ChickenEgg | ChocolateEgg
 data Milk = Milk Int -- amount in litres
   deriving Show
 
+class Price a where
+  price :: a -> Int
+
+instance Price Egg where
+  price ChickenEgg = 20
+  price ChocolateEgg = 30
+
+instance Price Milk where
+  price (Milk litres) = 15 * litres
 
 ------------------------------------------------------------------------------
 -- Ex 6: define the necessary instance hierarchy in order to be able
