@@ -196,12 +196,15 @@ simplify (RationalNumber a b) = let common = gcd a b
 --   signum (RationalNumber 0 2)             ==> RationalNumber 0 1
 
 instance Num RationalNumber where
-  p + q = todo
-  p * q = todo
-  abs q = todo
-  signum q = todo
-  fromInteger x = todo
-  negate q = todo
+  (RationalNumber a b) + (RationalNumber c d) = simplify (RationalNumber (a*d + b*c) (b*d))
+  (RationalNumber a b) * (RationalNumber c d) = simplify (RationalNumber (a * c) (b * d))
+  abs (RationalNumber a b) = RationalNumber (abs a) (abs b)
+  signum (RationalNumber a b)
+    | a < 0 = RationalNumber (-1) 1
+    | a == 0 = RationalNumber 0 1
+    | otherwise = RationalNumber 1 1
+  fromInteger x = RationalNumber x 1
+  negate (RationalNumber a b) = RationalNumber (-a) b
 
 ------------------------------------------------------------------------------
 -- Ex 11: a class for adding things. Define a class Addable with a
