@@ -134,9 +134,9 @@ average xs = sum xs / fromIntegral (length xs)
 -- PS. The Data.List.NonEmpty type has been imported for you
 
 reverseNonEmpty :: NonEmpty a -> NonEmpty a
-reverseNonEmpty = todo
--- reverseNonEmpty (x :| []) = x :| []
--- reverseNonEmpty (x :| xs) = reverseNonEmpty xs :| x
+reverseNonEmpty (x :| xs) = go x xs [] where
+  go x []      ys = x :| ys
+  go x (x':xs) ys = go x' xs (x:ys)
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement Semigroup instances for the Distance, Time and
@@ -148,6 +148,14 @@ reverseNonEmpty = todo
 -- velocity (Distance 50 <> Distance 10) (Time 1 <> Time 2)
 --    ==> Velocity 20
 
+instance Semigroup Distance where
+  Distance x <> Distance y = Distance (x + y)
+
+instance Semigroup Time where
+  Time x <> Time y = Time (x + y)
+
+instance Semigroup Velocity where
+  Velocity x <> Velocity y = Velocity (x + y)
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a Monoid instance for the Set type from exercise 2.
