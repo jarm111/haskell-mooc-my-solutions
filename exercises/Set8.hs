@@ -412,19 +412,24 @@ xy = Picture f
 data Fill = Fill Color
 
 instance Transform Fill where
-  apply = todo
+  apply (Fill color) _ = solid color
 
 data Zoom = Zoom Int
   deriving Show
 
 instance Transform Zoom where
-  apply = todo
+  apply (Zoom n) = zoom n
 
 data Flip = FlipX | FlipY | FlipXY
   deriving Show
 
 instance Transform Flip where
-  apply = todo
+  -- apply = todo
+  apply FlipX (Picture f1) = Picture f2
+    where f2 (Coord x y) = f1 (Coord (-x) y)
+  apply FlipY (Picture f1) = Picture f2
+    where f2 (Coord x y) = f1 (Coord x (-y))
+  apply FlipXY pic = flipXY pic
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -439,8 +444,8 @@ instance Transform Flip where
 data Chain a b = Chain a b
   deriving Show
 
-instance Transform (Chain a b) where
-  apply = todo
+instance (Transform a, Transform b) => Transform (Chain a b) where
+  apply (Chain t1 t2) pic = apply t1 (apply t2 pic)
 ------------------------------------------------------------------------------
 
 -- Now we can redefine largeVerticalStripes using the above Transforms.
