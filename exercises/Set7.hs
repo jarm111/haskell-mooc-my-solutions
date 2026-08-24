@@ -284,17 +284,22 @@ passwordAllowed pw (Or req1 req2) = passwordAllowed pw req1 || passwordAllowed p
 --     ==> "(3*(1+1))"
 --
 
-data Arithmetic = Todo
+data Arithmetic = Number Integer | Calculation String Arithmetic Arithmetic
   deriving Show
 
 literal :: Integer -> Arithmetic
-literal = todo
+literal = Number
 
 operation :: String -> Arithmetic -> Arithmetic -> Arithmetic
-operation = todo
+operation = Calculation
 
 evaluate :: Arithmetic -> Integer
-evaluate = todo
+evaluate (Number n) = n
+evaluate (Calculation "+" (Number x) (Number y)) = evaluate (Number (x + y))
+evaluate (Calculation "*" (Number x) (Number y)) = evaluate (Number (x * y))
+evaluate (Calculation op ari1 ari2) = evaluate (operation op (literal (evaluate ari1)) (literal(evaluate ari2)))
 
 render :: Arithmetic -> String
-render = todo
+render (Number n) = show n
+render (Calculation op (Number x) (Number y)) = "(" ++ show x ++ op ++ show y ++ ")"
+render (Calculation op ari1 ari2) = "(" ++ render ari1 ++ op ++ render ari2 ++ ")"
