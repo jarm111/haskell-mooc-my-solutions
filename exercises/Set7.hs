@@ -294,12 +294,12 @@ operation :: String -> Arithmetic -> Arithmetic -> Arithmetic
 operation = Calculation
 
 evaluate :: Arithmetic -> Integer
-evaluate (Number n) = n
+evaluate (Number n)                              = n
 evaluate (Calculation "+" (Number x) (Number y)) = evaluate (Number (x + y))
 evaluate (Calculation "*" (Number x) (Number y)) = evaluate (Number (x * y))
-evaluate (Calculation op ari1 ari2) = evaluate (operation op (literal (evaluate ari1)) (literal(evaluate ari2)))
+evaluate (Calculation op ari1 ari2)              = evaluate (operation op (literal (evaluate ari1)) (literal(evaluate ari2)))
 
 render :: Arithmetic -> String
-render (Number n) = show n
-render (Calculation op (Number x) (Number y)) = "(" ++ show x ++ op ++ show y ++ ")"
-render (Calculation op ari1 ari2) = "(" ++ render ari1 ++ op ++ render ari2 ++ ")"
+render (Number n)                             = show n
+render (Calculation op (Number x) (Number y)) = concat ["(", show x, op, show y, ")"]
+render (Calculation op ari1 ari2)             = concat ["(", render ari1, op, render ari2, ")"]
