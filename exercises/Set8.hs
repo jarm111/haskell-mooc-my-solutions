@@ -482,8 +482,16 @@ checkered = flipBlend largeVerticalStripes2
 data Blur = Blur
   deriving Show
 
+-- extract each color channel from 5 coords (original picture), map them to list
+-- count averages for each channel and return color
 instance Transform Blur where
-  apply = todo
+  apply Blur (Picture f1) = Picture f2
+    where f2 (Coord x y) = let average xs = div (sum xs) (length xs)
+                               coords     = map f1 [Coord x y, Coord (x-1) y, Coord (x+1) y, Coord x (y-1), Coord x (y+1)]
+                               red        = average (map getRed coords)
+                               green      = average (map getGreen coords)
+                               blue       = average (map getBlue coords)
+                           in Color red green blue
 ------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
@@ -501,7 +509,9 @@ data BlurMany = BlurMany Int
   deriving Show
 
 instance Transform BlurMany where
-  apply = todo
+  apply (BlurMany 0) pic = pic
+  apply (BlurMany n) pic = apply (BlurMany (n-1)) (apply Blur pic)
+
 ------------------------------------------------------------------------------
 
 -- Here's a blurred version of our original snowman. See it by running
