@@ -221,5 +221,15 @@ set (StepR:xs) val (Node x l r) = Node x l (set xs val r)
 --                            (Node 1 Empty Empty))
 --                    (Node 5 Empty Empty))                     ==>  Just [StepL,StepR]
 
+-- if hits empty node, return nothing
+-- check if val is node value
+-- if yes, return list of steps, 
+-- if not, recurse left returning StepL, recurse right returning StepR, 
 search :: Eq a => a -> Tree a -> Maybe [Step]
-search = todo
+search _   Empty        = Nothing
+search val (Node x l r) = 
+  if val == x 
+  then Just []
+  else case search val l of Just ys -> Just (StepL : ys)
+                            Nothing -> case search val r of Just ys -> Just (StepR : ys)
+                                                            Nothing -> Nothing
