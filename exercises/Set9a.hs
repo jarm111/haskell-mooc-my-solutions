@@ -26,7 +26,12 @@ import Mooc.Todo
 -- Otherwise return "Ok."
 
 workload :: Int -> Int -> String
-workload nExercises hoursPerExercise = todo
+workload nExercises hoursPerExercise
+  | total > 100 = "Holy moly!"
+  | total > 9   = "Ok."
+  | otherwise   = "Piece of cake!"
+  where total = nExercises * hoursPerExercise
+
 
 ------------------------------------------------------------------------------
 -- Ex 2: Implement the function echo that builds a string like this:
@@ -39,7 +44,9 @@ workload nExercises hoursPerExercise = todo
 -- Hint: use recursion
 
 echo :: String -> String
-echo = todo
+echo [x]    = x : ", "
+echo (x:xs) = [x] ++ xs ++ ", " ++ echo xs
+echo _      = ""
 
 ------------------------------------------------------------------------------
 -- Ex 3: A country issues some banknotes. The banknotes have a serial
@@ -52,7 +59,11 @@ echo = todo
 -- are valid.
 
 countValid :: [String] -> Int
-countValid = todo
+countValid []                            = 0 
+countValid (s:ss)
+  | s !! 2 == s !! 4 || s !! 3 == s !! 5 = 1 + countValid ss
+  | otherwise                            = countValid ss
+
 
 ------------------------------------------------------------------------------
 -- Ex 4: Find the first element that repeats two or more times _in a
@@ -64,7 +75,11 @@ countValid = todo
 --   repeated [1,2,1,2,3,3] ==> Just 3
 
 repeated :: Eq a => [a] -> Maybe a
-repeated = todo
+repeated [x]      = Nothing
+repeated (x:xs)
+  | x == head xs  = Just x
+  | otherwise     = repeated xs
+repeated _        = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 5: A laboratory has been collecting measurements. Some of the
@@ -86,7 +101,16 @@ repeated = todo
 --     ==> Left "no data"
 
 sumSuccess :: [Either String Int] -> Either String Int
-sumSuccess = todo
+-- sumSuccess []             = 0
+-- sumSuccess (Right x : xs) = x + sumSuccess xs
+-- sumSuccess (Left _ : xs)  = sumSuccess xs
+
+sumSuccess measurements = go measurements []
+  where go [] suc
+          | not (null suc)    = Right (sum suc)
+          | otherwise         = Left "no data"
+        go (Right x : xs) suc = go xs (x : suc)
+        go (Left _ : xs)  suc = go xs suc 
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
@@ -108,30 +132,36 @@ sumSuccess = todo
 --   isOpen (open "0000" (lock (changeCode "0000" (open "1234" aLock)))) ==> True
 --   isOpen (open "1234" (lock (changeCode "0000" (open "1234" aLock)))) ==> False
 
-data Lock = LockUndefined
+data Lock = Locked String | Open String
   deriving Show
 
 -- aLock should be a locked lock with the code "1234"
 aLock :: Lock
-aLock = todo
+aLock = Locked "1234"
 
 -- isOpen returns True if the lock is open
 isOpen :: Lock -> Bool
-isOpen = todo
+isOpen (Open _) = True
+isOpen _        = False
 
 -- open tries to open the lock with the given code. If the code is
 -- wrong, nothing happens.
 open :: String -> Lock -> Lock
-open = todo
+open code (Locked code')
+  | code == code'   = Open code'
+  | otherwise       = Locked code'
+open _ (Open code') = Open code'
 
 -- lock closes a lock. If the lock is already closed, nothing happens.
 lock :: Lock -> Lock
-lock = todo
+lock (Open code)   = Locked code
+lock (Locked code) = Locked code
 
 -- changeCode changes the code of an open lock. If the lock is closed,
 -- nothing happens.
 changeCode :: String -> Lock -> Lock
-changeCode = todo
+changeCode code (Open code')   = Open code
+changeCode _    (Locked code') = Locked code'
 
 ------------------------------------------------------------------------------
 -- Ex 7: Here's a type Text that just wraps a String. Implement an Eq
