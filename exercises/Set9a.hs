@@ -59,7 +59,7 @@ echo _      = ""
 -- are valid.
 
 countValid :: [String] -> Int
-countValid []                            = 0 
+countValid []                            = 0
 countValid (s:ss)
   | s !! 2 == s !! 4 || s !! 3 == s !! 5 = 1 + countValid ss
   | otherwise                            = countValid ss
@@ -101,16 +101,12 @@ repeated _        = Nothing
 --     ==> Left "no data"
 
 sumSuccess :: [Either String Int] -> Either String Int
--- sumSuccess []             = 0
--- sumSuccess (Right x : xs) = x + sumSuccess xs
--- sumSuccess (Left _ : xs)  = sumSuccess xs
-
 sumSuccess measurements = go measurements []
   where go [] suc
           | not (null suc)    = Right (sum suc)
           | otherwise         = Left "no data"
         go (Right x : xs) suc = go xs (x : suc)
-        go (Left _ : xs)  suc = go xs suc 
+        go (Left _ : xs)  suc = go xs suc
 
 ------------------------------------------------------------------------------
 -- Ex 6: A combination lock can either be open or closed. The lock
@@ -179,6 +175,10 @@ changeCode _    (Locked code') = Locked code'
 data Text = Text String
   deriving Show
 
+instance Eq Text where
+  (Text x) == (Text y) = removeWs x == removeWs y
+    where removeWs = filter (not . isSpace)
+
 
 ------------------------------------------------------------------------------
 -- Ex 8: We can represent functions or mappings as lists of pairs.
@@ -211,8 +211,14 @@ data Text = Text String
 --     compose [("a","alpha"),("b","beta"),("c","gamma")] [("alpha",1),("beta",2),("omicron",15)]
 --       ==> [("a",1),("b",2)]
 
+-- For list of tuples xs and ys. Tuple a b of xs and c d of ys. 
+-- For each a b of xs, lookup b in ys, if Just result, return tuple a d, if Nothing, move to next iteration
+-- Return list of tuples
+-- Recursion and case of or map and filter
 compose :: (Eq a, Eq b) => [(a,b)] -> [(b,c)] -> [(a,c)]
-compose = todo
+compose []         _  = []
+compose ((a,b):xs) ys = case lookup b ys of Just d   -> (a,d) : compose xs ys
+                                            Nothing  -> compose xs ys
 
 ------------------------------------------------------------------------------
 -- Ex 9: Reorder a list using a list of indices.
@@ -256,4 +262,6 @@ multiply :: Permutation -> Permutation -> Permutation
 multiply p q = map (\i -> p !! (q !! i)) (identity (length p))
 
 permute :: Permutation -> [a] -> [a]
-permute = todo
+permute p q = map (\i -> q !! go i p) (identity (length p))
+  where go e xs = case elemIndex e xs of Just i  -> i
+                                         Nothing -> 0
