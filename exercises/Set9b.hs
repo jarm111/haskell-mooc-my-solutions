@@ -47,10 +47,10 @@ type Col   = Int
 type Coord = (Row, Col)
 
 nextRow :: Coord -> Coord
-nextRow (i,j) = todo
+nextRow (i,j) = (i + 1, 1)
 
 nextCol :: Coord -> Coord
-nextCol (i,j) = todo
+nextCol (i,j) = (i, j + 1)
 
 --------------------------------------------------------------------------------
 -- Ex 2: Implement the function prettyPrint that, given the size of
@@ -102,8 +102,14 @@ nextCol (i,j) = todo
 
 type Size = Int
 
+-- Build the string one step at a time checking if Q and after each line printing "\n"
+-- map each row [0..size] for . or Q and map each column for "\n"
 prettyPrint :: Size -> [Coord] -> String
-prettyPrint = todo
+
+prettyPrint size coords = concat [[marker (i, j) coords | j <- indices] ++ "\n" | i <- indices]
+    where marker coord coords = if elem coord coords then 'Q' else '.'
+          indices = [1..size]
+
 
 --------------------------------------------------------------------------------
 -- Ex 3: The task in this exercise is to define the relations sameRow, sameCol,
@@ -127,16 +133,16 @@ prettyPrint = todo
 --   sameAntidiag (500,5) (5,500) ==> True
 
 sameRow :: Coord -> Coord -> Bool
-sameRow (i,j) (k,l) = todo
+sameRow (i,j) (k,l) = i == k
 
 sameCol :: Coord -> Coord -> Bool
-sameCol (i,j) (k,l) = todo
+sameCol (i,j) (k,l) = j == l
 
 sameDiag :: Coord -> Coord -> Bool
-sameDiag (i,j) (k,l) = todo
+sameDiag (i,j) (k,l) = i - j == k - l
 
 sameAntidiag :: Coord -> Coord -> Bool
-sameAntidiag (i,j) (k,l) = todo
+sameAntidiag (i,j) (k,l) = i + j == k + l
 
 --------------------------------------------------------------------------------
 -- Ex 4: In chess, a queen may capture another piece in the same row, column,
@@ -191,7 +197,8 @@ type Candidate = Coord
 type Stack     = [Coord]
 
 danger :: Candidate -> Stack -> Bool
-danger = todo
+danger cand stack = let checks = [sameRow, sameCol, sameDiag, sameAntidiag]
+                    in or [or [check cand queen | check <- checks] | queen <- stack]
 
 --------------------------------------------------------------------------------
 -- Ex 5: In this exercise, the task is to write a modified version of
@@ -226,7 +233,12 @@ danger = todo
 -- solution to this version. Any working solution is okay in this exercise.)
 
 prettyPrint2 :: Size -> Stack -> String
-prettyPrint2 = todo
+prettyPrint2 size stack = concat [[marker (i, j) stack | j <- indices] ++ "\n" | i <- indices]
+    where marker coord stack
+            | elem coord stack      = 'Q'
+            | danger coord stack    = '#'
+            | otherwise             = '.'
+          indices = [1..size]
 
 --------------------------------------------------------------------------------
 -- Ex 6: Now that we can check if a piece can be safely placed into a square in
