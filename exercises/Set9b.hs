@@ -282,8 +282,17 @@ prettyPrint2 size stack = concat [[marker (i, j) stack | j <- indices] ++ "\n" |
 --     ####Q###
 --     Q#######
 
+-- take first queen from stack
+-- for coordinate check if in danger
+-- no -> Just queen ++ rest of the stack
+-- yes -> update queens coord with nextCol and check again
+-- if col is bigger than size, return Nothing
+
 fixFirst :: Size -> Stack -> Maybe Stack
-fixFirst n s = todo
+fixFirst n (q:qs) 
+     | snd q > n   = Nothing
+     | danger q qs = fixFirst n ((nextCol q) : qs)
+     | otherwise   = Just (q : qs)
 
 --------------------------------------------------------------------------------
 -- Ex 7: We need two helper functions for stack management.
@@ -305,10 +314,10 @@ fixFirst n s = todo
 -- Hint: Remember nextRow and nextCol? Use them!
 
 continue :: Stack -> Stack
-continue s = todo
+continue (q:qs) = nextRow q : q : qs
 
 backtrack :: Stack -> Stack
-backtrack s = todo
+backtrack (q:q':qs) = nextCol q' : qs
 
 --------------------------------------------------------------------------------
 -- Ex 8: Let's take a step. Our algorithm solves the problem (in a
@@ -377,7 +386,9 @@ backtrack s = todo
 --     step 8 [(6,1),(5,4),(4,2),(3,5),(2,3),(1,1)] ==> [(5,5),(4,2),(3,5),(2,3),(1,1)]
 
 step :: Size -> Stack -> Stack
-step = todo
+step n s = case fixFirst n s of
+    Nothing -> backtrack s
+    Just s  -> continue s
 
 --------------------------------------------------------------------------------
 -- Ex 9: Let's solve our puzzle! The function finish takes a partial
@@ -392,7 +403,9 @@ step = todo
 -- solve the n queens problem.
 
 finish :: Size -> Stack -> Stack
-finish = todo
+finish n s
+    | length s >= n+1   = tail s
+    | otherwise         = finish n (step n s)
 
 solve :: Size -> Stack
 solve n = finish n [(1,1)]
