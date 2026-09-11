@@ -139,7 +139,7 @@ lengthAtLeast n (_:xs) = lengthAtLeast (n - 1) xs
 chunks :: Int -> [a] -> [[a]]
 chunks n xs
   | lengthAtLeast n xs = (head xs : take (n - 1) (tail xs)) : chunks n (tail xs)
-  | otherwise              = []
+  | otherwise          = []
 
 ------------------------------------------------------------------------------
 -- Ex 8: Define a newtype called IgnoreCase, that wraps a value of
@@ -155,7 +155,14 @@ chunks n xs
 --   ignorecase "abC" == ignorecase "ABc"  ==>  True
 --   ignorecase "acC" == ignorecase "ABc"  ==>  False
 
-ignorecase = todo
+newtype IgnoreCase = IgnoreCase String
+
+instance Eq IgnoreCase where
+  (IgnoreCase x) == (IgnoreCase y) = lower x == lower y
+    where lower = map toLower
+
+ignorecase :: String -> IgnoreCase
+ignorecase = IgnoreCase
 
 ------------------------------------------------------------------------------
 -- Ex 9: Here's the Room type and some helper functions from the
@@ -199,4 +206,7 @@ play room (d:ds) = case move room d of Nothing -> [describe room]
                                        Just r -> describe room : play r ds
 
 maze :: Room
-maze = todo
+maze = maze1
+  where maze1 = Room "Maze" [("Left",maze2),("Right",maze3)]
+        maze2 = Room "Deeper in the maze" [("Left",maze3),("Right",maze1)]
+        maze3 = Room "Elsewhere in the maze" [("Left",maze1),("Right",maze2)]
