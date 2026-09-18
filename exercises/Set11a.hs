@@ -83,16 +83,24 @@ readWords n = go n []
 --   ["bananas","garlic","pakchoi"]
 
 readUntil :: (String -> Bool) -> IO [String]
-readUntil f = todo
--- readUntil f = do
---   word <- getLine
---   return (if f word then [] else word : readUntil f)
+readUntil f = go f []
+  where go f lines = do
+          line <- getLine
+          if f line 
+          then return $ reverse lines
+          else go f (line : lines)
+  
+
 
 ------------------------------------------------------------------------------
 -- Ex 6: given n, print the numbers from n to 0, one per line
 
 countdownPrint :: Int -> IO ()
-countdownPrint n = todo
+countdownPrint (-1) = return ()
+countdownPrint n    = do
+  print n
+  countdownPrint (n - 1)
+  
 
 ------------------------------------------------------------------------------
 -- Ex 7: isums n should read n numbers from the user (one per line) and
@@ -107,7 +115,12 @@ countdownPrint n = todo
 --   5. produces 9
 
 isums :: Int -> IO Int
-isums n = todo
+isums 0 = return 0
+isums n = do
+  i <- readLn
+  s <- isums (n - 1)
+  print (i + s)
+  return (i + s)
 
 ------------------------------------------------------------------------------
 -- Ex 8: when is a useful function, but its first argument has type
