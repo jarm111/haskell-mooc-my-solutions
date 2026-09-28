@@ -111,7 +111,14 @@ count n = foldr (\x -> if x == n then (+1) else id) 0
 --   inBoth Nothing [3]    ==> []
 
 inBoth :: (Foldable f, Foldable g, Eq a) => f a -> g a -> [a]
-inBoth = todo
+-- inBoth [] _  = []
+-- inBoth _  [] = []
+inBoth xs ys = let xs' = toList xs
+                   ys' = toList ys
+                   go [] = const []
+                   go xs' = filter (`elem` xs')
+               in  go xs' ys'
+
 
 ------------------------------------------------------------------------------
 -- Ex 8: Implement the instance Foldable List.
@@ -124,7 +131,10 @@ inBoth = todo
 --   length (LNode 1 (LNode 2 (LNode 3 Empty))) ==> 3
 
 instance Foldable List where
-  foldr = todo
+  foldr _ initialValue Empty       = initialValue
+  --foldr f initialValue (LNode x l)  = foldr f (f x initialValue) l -- right to left
+  foldr f initialValue (LNode x l) = f x (foldr f initialValue l) -- left to right
+
 
 ------------------------------------------------------------------------------
 -- Ex 9: Implement the instance Foldable TwoList.
@@ -134,7 +144,8 @@ instance Foldable List where
 --   length (TwoNode 0 1 (TwoNode 2 3 TwoEmpty)) ==> 4
 
 instance Foldable TwoList where
-  foldr = todo
+  foldr _ initialValue TwoEmpty           = initialValue
+  foldr f initialValue (TwoNode x y twol) = f x (f y (foldr f initialValue twol))
 
 ------------------------------------------------------------------------------
 -- Ex 10: (Tricky!) Fun a is a type that wraps a function Int -> a.
