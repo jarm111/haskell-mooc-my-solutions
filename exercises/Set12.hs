@@ -160,6 +160,7 @@ runFun :: Fun a -> Int -> a
 runFun (Fun f) x = f x
 
 instance Functor Fun where
+  fmap f fun = Fun (f . runFun fun)
 
 ------------------------------------------------------------------------------
 -- Ex 11: (Tricky!) You'll find the binary tree type from Set 5b
@@ -216,7 +217,8 @@ data Tree a = Leaf | Node a (Tree a) (Tree a)
   deriving Show
 
 instance Functor Tree where
-  fmap = todo
+  fmap _ Leaf = Leaf
+  fmap f (Node val left right) = Node (f val) (fmap f left) (fmap f right)
 
 sumTree :: Monoid m => Tree m -> m
 sumTree = todo
