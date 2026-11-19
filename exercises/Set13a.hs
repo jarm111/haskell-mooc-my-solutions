@@ -47,19 +47,28 @@ readNames s =
 -- (NB! There are obviously other corner cases like the inputs " " and
 -- "a b c", but you don't need to worry about those here)
 split :: String -> Maybe (String,String)
-split = todo
+split s = if elem ' ' s
+          then Just (f (words s))
+          else Nothing
+            where f (x:y:xs) = (x, y)
 
 -- checkNumber should take a pair of two strings and return them
 -- unchanged if they don't contain numbers. Otherwise Nothing is
 -- returned.
 checkNumber :: (String, String) -> Maybe (String, String)
-checkNumber = todo
+checkNumber (a, b) = if f a || f b 
+                     then Nothing
+                     else Just (a, b)
+                       where f = any isNumber
 
 -- checkCapitals should take a pair of two strings and return them
 -- unchanged if both start with a capital letter. Otherwise Nothing is
 -- returned.
 checkCapitals :: (String, String) -> Maybe (String, String)
-checkCapitals (for,sur) = todo
+checkCapitals (a, b) = if f a && f b 
+                       then Just (a, b)
+                       else Nothing
+                         where f = isUpper . head
 
 ------------------------------------------------------------------------------
 -- Ex 2: Given a list of players and their scores (as [(String,Int)]),
